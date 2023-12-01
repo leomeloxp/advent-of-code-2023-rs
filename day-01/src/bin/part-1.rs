@@ -4,28 +4,23 @@ fn main() {
 }
 
 fn process_part1(input: &str) -> String {
-    let lines: Vec<String> = input
-        .split('\n')
+    let result = input
+        .lines()
+        .map(|line| line.chars().filter(|ch| ch.is_numeric()))
         .map(|line| {
-            line.chars()
-                .filter(|ch| ch.is_numeric())
-                .collect::<String>()
+            // We're using `clone()` here because if the line only has one digit
+            // we need use it twice to generate the desired number.
+            if let (Some(first_char), Some(last_char)) = (line.clone().next(), line.last()) {
+                format!("{}{}", first_char, last_char)
+                    .parse::<i32>()
+                    .unwrap_or(0)
+            } else {
+                0
+            }
         })
-        .filter(|line| !line.is_empty())
-        .collect();
+        .sum::<i32>();
 
-    let digits: Vec<i32> = lines
-        .iter()
-        .map(|line| {
-            let first_char = line.chars().next().unwrap();
-            let last_char = line.chars().last().unwrap();
-            format!("{}{}", first_char, last_char)
-        })
-        .map(|line| line.parse::<i32>().unwrap())
-        .collect();
-
-    let sum = digits.iter().sum::<i32>();
-    sum.to_string()
+    result.to_string()
 }
 
 #[cfg(test)]
